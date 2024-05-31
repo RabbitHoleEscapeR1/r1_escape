@@ -112,9 +112,9 @@ while ! fastboot devices | grep -q "fastboot"; do
     sleep 1
 done
 
-#fastboot flashing unlock
-#fastboot -w
-#fastboot flash --disable-verity --disable-verification vbmeta vbmeta.img
-#fastboot reboot-fastboot
-#fastboot flash system system.img
-#fastboot reboot
+fastboot flashing unlock
+fastboot -w
+fastboot flash --disable-verity --disable-verification vbmeta vbmeta.img
+fastboot reboot-fastboot
+fastboot flash system system.img
+fastboot reboot
