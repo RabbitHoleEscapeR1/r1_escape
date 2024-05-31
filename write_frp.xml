@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<flashtool-config version="2.0">
+    <general>
+        <chip-name>MT6765</chip-name>
+        <storage-type>EMMC</storage-type>
+        <download-agent>MTK_AllInOne_DA.bin</download-agent>
+        <scatter></scatter>
+        <authentication></authentication>
+        <certification></certification>
+        <rom-list></rom-list>
+        <connection type="BromUSB" high-speed="true" power="AutoDetect" da_log_level="Info" da_log_channel="UART" timeout-count="3600000" com-port="" storage_life_cycle_check="true" />
+        <checksum-level>none</checksum-level>
+        <!--log_on: log switch, enable log if true, otherwise false;
+                        log_path: the directory in which the log files has been stored;
+                        clean_hours: the time setting to delete log files regularly, the unit is hours.-->
+    </general>
+    <commands>
+      <download-withoutScatter>
+        <download-list>
+            <download-rom-item partition="frp">frp.bin</download-rom-item>
+        </download-list>
+      </download-withoutScatter>
+    </commands>
+</flashtool-config>
