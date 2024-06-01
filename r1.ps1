@@ -1,3 +1,26 @@
+function Reconnect-DeviceByHWID {
+    param (
+        [string]$TargetHWID,
+        [int]$DelaySeconds = 3
+    )
+
+    $target_hwid_normalized = $TargetHWID -replace ":", "_" -replace "=", "&"
+    $device = Get-PnpDevice | Where-Object { $_.InstanceId -like "*$target_hwid_normalized*" }
+
+    if ($device) {
+        Write-Output "Found device: $($device.FriendlyName)"
+        Write-Output "Instance ID: $($device.InstanceId)"
+        Write-Output "Disabling the device..."
+        Disable-PnpDevice -InstanceId $device.InstanceId -Confirm:$false
+        Start-Sleep -Seconds $DelaySeconds
+        Write-Output "Enabling the device..."
+        Enable-PnpDevice -InstanceId $device.InstanceId -Confirm:$false
+        Write-Output "Device has been reconnected."
+    } else {
+        Write-Output "No device found with HWID: $TargetHWID"
+    }
+}
+
 # Function to install Chocolatey if not installed
 function Install-Chocolatey {
     if (-not (Test-Path "$env:ProgramData\chocolatey")) {
@@ -57,18 +80,20 @@ Read-Host "Power off the device, press ENTER, and then plug the device in."
 
 Start-Process -Wait -FilePath .\flash_tool.exe -ArgumentList "-i read_frp.xml -b"
 
-$frpBinPath = "frp.bin"
+$currentDir = Get-Location
+$frpBinPath = Join-Path -Path $currentDir -ChildPath "frp.bin"
 $frpBinBytes = [System.IO.File]::ReadAllBytes($frpBinPath)
-
 if ($frpBinBytes[-1] -eq 0x00) {
     $frpBinBytes[-1] = 0x01
     [System.IO.File]::WriteAllBytes($frpBinPath, $frpBinBytes)
 }
 
+Reconnect-DeviceByHWID -TargetHWID "VID:PID=0E8D:2000" -DelaySeconds 3
 Start-Process -Wait -FilePath .\flash_tool.exe -ArgumentList "-i write_frp.xml -b"
 
 Set-Location -Path $PSScriptRoot
 
+Reconnect-DeviceByHWID -TargetHWID "VID:PID=0E8D:2000" -DelaySeconds 3
 Start-Process -Wait -FilePath python -ArgumentList "mtkbootcmd.py FASTBOOT"
 
 do {
