@@ -1,26 +1,3 @@
-function Reconnect-DeviceByHWID {
-    param (
-        [string]$TargetHWID,
-        [int]$DelaySeconds = 3
-    )
-
-    $target_hwid_normalized = $TargetHWID -replace ":", "_" -replace "=", "&"
-    $device = Get-PnpDevice | Where-Object { $_.InstanceId -like "*$target_hwid_normalized*" }
-
-    if ($device) {
-        Write-Output "Found device: $($device.FriendlyName)"
-        Write-Output "Instance ID: $($device.InstanceId)"
-        Write-Output "Disabling the device..."
-        Disable-PnpDevice -InstanceId $device.InstanceId -Confirm:$false
-        Start-Sleep -Seconds $DelaySeconds
-        Write-Output "Enabling the device..."
-        Enable-PnpDevice -InstanceId $device.InstanceId -Confirm:$false
-        Write-Output "Device has been reconnected."
-    } else {
-        Write-Output "No device found with HWID: $TargetHWID"
-    }
-}
-
 # Function to install Chocolatey if not installed
 function Install-Chocolatey {
     if (-not (Test-Path "$env:ProgramData\chocolatey")) {
@@ -55,30 +32,18 @@ Install-PackageIfNotInstalled "virtualenv" "pip install virtualenv"
 Install-PackageIfNotInstalled "adb" "choco install adb -y"
 Install-PackageIfNotInstalled "fastboot" "choco install fastboot -y"
 
-$SP_FLASH_TOOL_URL_WIN = "https://spflashtools.com/wp-content/uploads/SP_Flash_Tool_v5.2316_Win.zip"
-$SP_FLASH_TOOL_DIR = "SP_Flash_Tool"
-$SP_FLASH_TOOL_FLAG = "sp_flash_tool_extracted"
-
-if (-not (Test-Path $SP_FLASH_TOOL_FLAG)) {
-    Invoke-WebRequest -Uri $SP_FLASH_TOOL_URL_WIN -OutFile "sp_flash_tool.zip"
-    New-Item -ItemType Directory -Path $SP_FLASH_TOOL_DIR -ErrorAction SilentlyContinue | Out-Null
-    Expand-Archive -Path "sp_flash_tool.zip" -DestinationPath $SP_FLASH_TOOL_DIR -Force
-    Move-Item -Path "$($SP_FLASH_TOOL_DIR)\SP_Flash_Tool_v5.2316_Win\*" -Destination $SP_FLASH_TOOL_DIR -Force
-    Remove-Item -Path "$($SP_FLASH_TOOL_DIR)\SP_Flash_Tool_v5.2316_Win" -Recurse -Force
-    Remove-Item -Path "sp_flash_tool.zip" -Force
-    Copy-Item *.xml $SP_FLASH_TOOL_DIR
-    New-Item -Path $SP_FLASH_TOOL_FLAG -ItemType File -Force
-}
-
 python -m venv venv
 .\venv\Scripts\Activate.ps1
-pip install pyserial
 
-Set-Location -Path $SP_FLASH_TOOL_DIR
+$repoUrl = "https://github.com/AgentFabulous/mtkclient"
+$repoName = [System.IO.Path]::GetFileNameWithoutExtension($repoUrl)
+git clone $repoUrl
+Set-Location -Path $repoName
+pip install -r requirements.txt
 
 Read-Host "Power off the device, press ENTER, and then plug the device in."
 
-Start-Process -Wait -FilePath .\flash_tool.exe -ArgumentList "-i read_frp.xml -b"
+python mtk r frp frp.bin --serialport
 
 $currentDir = Get-Location
 $frpBinPath = Join-Path -Path $currentDir -ChildPath "frp.bin"
@@ -88,12 +53,14 @@ if ($frpBinBytes[-1] -eq 0x00) {
     [System.IO.File]::WriteAllBytes($frpBinPath, $frpBinBytes)
 }
 
-Reconnect-DeviceByHWID -TargetHWID "VID:PID=0E8D:2000" -DelaySeconds 3
-Start-Process -Wait -FilePath .\flash_tool.exe -ArgumentList "-i write_frp.xml -b"
+Read-Host "Unplug the device, press ENTER, and then plug the device in."
+
+python mtk w frp frp.bin --serialport
 
 Set-Location -Path $PSScriptRoot
 
-Reconnect-DeviceByHWID -TargetHWID "VID:PID=0E8D:2000" -DelaySeconds 3
+Read-Host "Unplug the device, press ENTER, and then plug the device in."
+
 Start-Process -Wait -FilePath python -ArgumentList "mtkbootcmd.py FASTBOOT"
 
 do {
