@@ -60,38 +60,26 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     fi
 fi
 
-SP_FLASH_TOOL_URL_LINUX="https://spflashtools.com/wp-content/uploads/SP_Flash_Tool_v5.2228_Linux.zip"
-SP_FLASH_TOOL_DIR="SP_Flash_Tool"
-SP_FLASH_TOOL_FLAG="sp_flash_tool_extracted"
-
-if [[ ! -f "$SP_FLASH_TOOL_FLAG" ]]; then
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        curl -o sp_flash_tool.zip "$SP_FLASH_TOOL_URL_LINUX"
-        mkdir -p "$SP_FLASH_TOOL_DIR"
-        unzip -o sp_flash_tool.zip "SP_Flash_Tool_v5.2228_Linux/*" -d "$SP_FLASH_TOOL_DIR"
-        mv "$SP_FLASH_TOOL_DIR/SP_Flash_Tool_v5.2228_Linux"/* "$SP_FLASH_TOOL_DIR"
-        rm -rf "$SP_FLASH_TOOL_DIR/SP_Flash_Tool_v5.2228_Linux"
-        rm sp_flash_tool.zip
-    fi
-    cp *.xml "$SP_FLASH_TOOL_DIR/"
-    touch "$SP_FLASH_TOOL_FLAG"
-fi
-
-FLASH_TOOL_CMD="sudo ./flash_tool"
-
 # Setup virtualenv and install requirements
 python3 -m venv venv
 source venv/bin/activate
-pip install pyserial
 
 chmod +x mtkbootcmd.py
 
-cd SP_Flash_Tool/
-chmod +x ./flash_tool
-chmod +x ./flash_tool.sh
+# Download mtkclient
+REPO_URL="https://github.com/AgentFabulous/mtkclient"
+REPO_NAME=$(basename "$REPO_URL" .git)
+git clone "$REPO_URL"
+cd "$REPO_NAME" || exit
+pip install -r requirements.txt
 
-read -p "Power off the device, press ENTER, and then plug the device in."
-$FLASH_TOOL_CMD -i read_frp.xml -b
+rm -f frp.bin
+
+read -p "Power off your device, press ENTER plug it into your PC"
+
+# Read FRP
+echo "Read FRP"
+sudo python mtk r frp frp.bin
 
 sudo chown $USER frp.bin
 
@@ -100,7 +88,11 @@ if [[ "$LAST_BYTE" == "00" ]]; then
     printf '\x01' | dd of=frp.bin bs=1 seek=$(($(stat -c%s frp.bin) - 1)) conv=notrunc
 fi
 
-$FLASH_TOOL_CMD -i write_frp.xml -b
+# Write FRP
+echo "Write new FRP"
+sudo python mtk w frp frp.bin
+
+read -p "Unplug your device, press ENTER, plug it back in"
 
 cd ..
 

@@ -1,6 +1,4 @@
-SP_Flash_Tool/
-readback_ui_bak.xml
 venv/
 system.img
-sp_flash_tool_extracted
 .DS_Store
+mtkclient/
