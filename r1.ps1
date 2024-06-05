@@ -41,7 +41,7 @@ git clone $repoUrl
 Set-Location -Path $repoName
 pip install -r requirements.txt
 
-Read-Host "Power off the device, press ENTER, and then plug the device in."
+Read-Host "[*] Power off the device, press ENTER, and then plug the device in"
 
 python mtk r frp frp.bin --serialport
 
@@ -53,15 +53,17 @@ if ($frpBinBytes[-1] -eq 0x00) {
     [System.IO.File]::WriteAllBytes($frpBinPath, $frpBinBytes)
 }
 
-Read-Host "Unplug the device, press ENTER, and then plug the device in."
+Read-Host "[*] Unplug the device, press ENTER, and then plug the device in"
 
 python mtk w frp frp.bin --serialport
 
 Set-Location -Path $PSScriptRoot
 
-Read-Host "Unplug the device, press ENTER, and then plug the device in."
+Read-Host "[*] Unplug the device, press ENTER, and then plug the device in"
 
 Start-Process -Wait -FilePath python -ArgumentList "mtkbootcmd.py FASTBOOT"
+
+Write-Output "[*] Waiting for fastboot..."
 
 do {
     Start-Sleep -Seconds 1

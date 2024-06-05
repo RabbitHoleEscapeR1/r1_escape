@@ -75,10 +75,9 @@ pip install -r requirements.txt
 
 rm -f frp.bin
 
-read -p "Power off your device, press ENTER plug it into your PC"
+read -p "[*] Power off your device, press ENTER plug it into your PC"
 
 # Read FRP
-echo "Read FRP"
 sudo python mtk r frp frp.bin
 
 sudo chown $USER frp.bin
@@ -89,18 +88,16 @@ if [[ "$LAST_BYTE" == "00" ]]; then
 fi
 
 # Write FRP
-echo "Write new FRP"
 sudo python mtk w frp frp.bin
 
-read -p "Unplug your device, press ENTER, plug it back in"
+read -p "[*] Unplug your device, press ENTER, plug it back in"
 
 cd ..
 
 sudo ./mtkbootcmd.py FASTBOOT
 
-# Wait for a device to show up under "fastboot devices"
+echo "[*] Waiting for fastboot..."
 while ! fastboot devices | grep -q "fastboot"; do
-    echo "Waiting for fastboot..."
     sleep 1
 done
 
