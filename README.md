@@ -33,6 +33,7 @@ XDA and Koush's all-in-one package is possibly a bit dated, but will do the job.
 You will also require MediaTek Preloader USB VCOM drivers. Now, there are many sources on rather shady websites, but I suggest grabbing them from an OEM's instructions directly, for example:
  - **Hovatek**: https://www.hovatek.com/forum/thread-16640.html
  - **Teracube**: https://downloads.myteracube.com/Drivers/MediaTek_Preloader_USB_VCOM_Drivers_Setup_Signed.zip 
+ - **Some random Mediafire source that worked for me**: https://www.mediafire.com/file/uoko5a2gnn8vwtc/MT65XX-Preloader-drivers.rar
 
 Windows might also automatically try downloading and installing these drivers, but your mileage may vary.
 
@@ -41,12 +42,13 @@ Okay, lets get down to business.
 ### Windows
 1. Open an admin PowerShell
 2. Run `Set-ExecutionPolicy unrestricted`
-3. Either clone this repository or download it as ZIP
-4. Extract it, and in the directory you should see a bunch of files including `r1.ps1`
-5. Download and place the system.img file from here.
-6. Right click in the directory and click "Open in Terminal"
-7. Run `.\r1.ps1`
-8. You may be asked to turn off and plug in your device, the script _should_ take care of the rest.
+3. Search for "Manage app execution aliases", scroll down till you see 2 entries called "App Installer" - python/python3.exe, disable these.
+4. Either clone this repository or download it as ZIP
+5. Extract it, and in the directory you should see a bunch of files including `r1.ps1`
+6. Download and place the system.img file from here.
+7. Right click in the directory and click "Open in Terminal"
+8. Run `.\r1.ps1`
+9. You may be asked to turn off and plug in your device multiple times, the script _should_ take care of the rest.
 
 ### Linux
 1. Either clone this repository or download it as ZIP
