@@ -66,7 +66,18 @@ If the script says "Waiting for device" or similar, you may need to select any "
 ### Linux
 ¯\_(ツ)_/¯
 
+### The R1 itself
+Upon booting, you may be spammed with notifications saying "Your device isn't certified". This is currently normal, and you can workaround this by following here:
+https://www.google.com/android/uncertified
+
 ## Backup and Restore Stock
 
 *Coming soon*
+
+
+## Credits
+- [mtkclient](https://github.com/bkerler/mtkclient/)
+- my cat mocha for moral support
+- Everyone else actively developing & reversing MediaTek platforms
+
 
