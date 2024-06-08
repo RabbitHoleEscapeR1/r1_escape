@@ -71,14 +71,14 @@ REPO_URL="https://github.com/AgentFabulous/mtkclient"
 REPO_NAME=$(basename "$REPO_URL" .git)
 git clone "$REPO_URL"
 cd "$REPO_NAME" || exit
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 
 rm -f frp.bin
 
 read -p "[*] Power off your device, press ENTER plug it into your PC"
 
 # Read FRP
-sudo python mtk r frp frp.bin
+sudo python3 mtk r frp frp.bin
 
 sudo chown $USER frp.bin
 
@@ -88,7 +88,7 @@ if [[ "$LAST_BYTE" == "00" ]]; then
 fi
 
 # Write FRP
-sudo python mtk w frp frp.bin
+sudo python3 mtk w frp frp.bin
 
 read -p "[*] Unplug your device, press ENTER, plug it back in"
 
