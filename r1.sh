@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Current working directory, but slash escaped. Useful for sed search/replace
+# strings.
+ESCAPED_PWD=`echo "$PWD" | sed -e "s@\/@\\\\\/@g"`
+
+# Python that we will install in a venv.
+SEDSTR_BINPYTHON=`echo s@/usr\/bin\/python@${ESCAPED_PWD}\/venv\/bin\/python@g`
+SEDSTR_ENVPYTHON=`echo s@/usr\/bin\/env python@${ESCAPED_PWD}\/venv\/bin\/python@g`
+VENV_PYTHON=$PWD/venv/bin/python
+VENV_PIP=$PWD/venv/bin/pip3
+
 install_debian() {
     sudo apt update
     [[ -x "$(command -v git)" ]] || sudo apt install -y git
@@ -65,20 +75,38 @@ python3 -m venv venv
 source venv/bin/activate
 
 chmod +x mtkbootcmd.py
+# Make `mtkbootcmd.py` use "${ESCAPED_PWD}"/venv/bin/python.
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Sed is different on mac.
+    grep -rl "usr/bin/env python3" mtkbootcmd.py | xargs sed -i '' $SEDSTR_ENVPYTHON
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    grep -rl "usr/bin/env python" mtkbootcmd.py | xargs sed -i $SEDSTR_ENVPYTHON
+fi
 
 # Download mtkclient
 REPO_URL="https://github.com/AgentFabulous/mtkclient"
 REPO_NAME=$(basename "$REPO_URL" .git)
 git clone "$REPO_URL"
 cd "$REPO_NAME" || exit
-pip3 install -r requirements.txt
+
+# Make mtkclient use "${ESCAPED_PWD}"/venv/bin/python, for consistency.
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Sed is different on mac.
+    grep -rl "usr/bin/python3" . | xargs sed -i '' $SEDSTR_BINPYTHON
+    grep -rl "usr/bin/env python3" . | xargs sed -i '' $SEDSTR_ENVPYTHON
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    grep -rl "usr/bin/python" . | xargs sed -i $SEDSTR_BINPYTHON
+    grep -rl "usr/bin/env python" . | xargs sed -i $SEDSTR_ENVPYTHON
+fi
+
+${VENV_PIP} install -r requirements.txt
 
 rm -f frp.bin
 
 read -p "[*] Power off your device, press ENTER plug it into your PC"
 
 # Read FRP
-sudo python3 mtk r frp frp.bin
+sudo ${VENV_PYTHON} mtk r frp frp.bin
 
 sudo chown $USER frp.bin
 
@@ -88,7 +116,7 @@ if [[ "$LAST_BYTE" == "00" ]]; then
 fi
 
 # Write FRP
-sudo python3 mtk w frp frp.bin
+sudo ${VENV_PYTHON} mtk w frp frp.bin
 
 read -p "[*] Unplug your device, press ENTER, plug it back in"
 
