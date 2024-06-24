@@ -84,7 +84,7 @@ but your mileage may vary.
    RELEASE=20240605
 
    # Download.
-   wget https://github.com/RabbitHoleEscapeR1/r1_escape/releases/download/${RELEASE}/system.img.xz
+   wget https://github.com/RabbitHoleEscapeR1/r1_escape/releases/latest/download/system.img.xz
 
    # Unpack.
    sudo apt-get install xz-utils  # If you don't already have it.
