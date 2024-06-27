@@ -64,7 +64,7 @@ If the script says "Plug in USB" or similar, you may need to select any "Preload
 If the script says "Waiting for device" or similar, you may need to select any "fastboot" driver.
 
 ### Linux
-¯\_(ツ)_/¯
+¯\\_(ツ)_/¯
 
 ### The R1 itself
 Upon booting, you may be spammed with notifications saying "Your device isn't certified". This is currently normal, and you can workaround this by following here:
