@@ -64,15 +64,26 @@ If the script says "Plug in USB" or similar, you may need to select any "Preload
 If the script says "Waiting for device" or similar, you may need to select any "fastboot" driver.
 
 ### Linux
-¯\\_(ツ)_/¯
+¯\\\_(ツ)\_/¯
 
 ### The R1 itself
 Upon booting, you may be spammed with notifications saying "Your device isn't certified". This is currently normal, and you can workaround this by following here:
 https://www.google.com/android/uncertified
 
-## Backup and Restore Stock
+## Restore Stock
+(Thanks to [@jadentha](https://github.com/jadentha) and [@Davis8483](https://github.com/Davis8483)!)
 
-*Coming soon*
+1. Download and unzip a r1 [backup](https://drive.proton.me/urls/RWFQD4W9Z0#0xrCC1B5fq1u).
+
+2. Run mtkclient from the command line using:
+
+   On Windows: `python mtk.py wl "path\to\backup" --serialport`
+
+   On Linux: `python mtk.py wl "path\to\backup"` (or use mtkclient-GUI).
+
+    _(If you have issues with slow write speeds, follow this [issue](https://github.com/bkerler/mtkclient/issues/271#issuecomment-1038979632))._
+
+3. Sit back and relax as your r1 is reset back to stock. This could take 20 minutes up to a few hours.
 
 
 ## Credits
