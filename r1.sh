@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 install_debian() {
     sudo apt update
     [[ -x "$(command -v git)" ]] || sudo apt install -y git
@@ -8,6 +10,7 @@ install_debian() {
     [[ -x "$(command -v dos2unix)" ]] || sudo apt install -y dos2unix
     [[ -x "$(command -v curl)" ]] || sudo apt install -y curl
     [[ -x "$(command -v unzip)" ]] || sudo apt install -y unzip
+    dpkg-query -l libfuse-dev >/dev/null 2>&1 || sudo apt install -y libfuse-dev
 }
 
 install_arch() {
@@ -61,15 +64,16 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 fi
 
 # Setup virtualenv and install requirements
-python3 -m venv venv
+python3 -m virtualenv venv
 source venv/bin/activate
+alias spython="sudo -E env PATH=$PATH python3"
 
 chmod +x mtkbootcmd.py
 
 # Download mtkclient
 REPO_URL="https://github.com/AgentFabulous/mtkclient"
 REPO_NAME=$(basename "$REPO_URL" .git)
-git clone "$REPO_URL"
+test -d "$REPO_NAME" || git clone "$REPO_URL"
 cd "$REPO_NAME" || exit
 pip3 install -r requirements.txt
 
@@ -78,7 +82,7 @@ rm -f frp.bin
 read -p "[*] Power off your device, press ENTER plug it into your PC"
 
 # Read FRP
-sudo python3 mtk r frp frp.bin
+spython mtk r frp frp.bin
 
 sudo chown $USER frp.bin
 
@@ -88,13 +92,13 @@ if [[ "$LAST_BYTE" == "00" ]]; then
 fi
 
 # Write FRP
-sudo python3 mtk w frp frp.bin
+spython mtk w frp frp.bin
 
 read -p "[*] Unplug your device, press ENTER, plug it back in"
 
 cd ..
 
-sudo ./mtkbootcmd.py FASTBOOT
+spython ./mtkbootcmd.py FASTBOOT
 
 echo "[*] Waiting for fastboot..."
 while ! fastboot devices | grep -q "fastboot"; do
