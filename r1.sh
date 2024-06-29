@@ -64,7 +64,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 fi
 
 # Setup virtualenv and install requirements
-virtualenv venv
+python3 -m virtualenv venv
 source venv/bin/activate
 alias spython="sudo -E env PATH=$PATH python3"
 
