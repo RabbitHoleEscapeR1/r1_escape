@@ -62,8 +62,9 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 fi
 
 # Setup virtualenv and install requirements
-python3 -m venv venv
+virtualenv venv
 source venv/bin/activate
+alias spython="sudo -E env PATH=$PATH python3"
 
 chmod +x mtkbootcmd.py
 
@@ -79,7 +80,7 @@ rm -f frp.bin
 read -p "[*] Power off your device, press ENTER plug it into your PC"
 
 # Read FRP
-sudo python3 mtk r frp frp.bin
+spython mtk r frp frp.bin
 
 sudo chown $USER frp.bin
 
@@ -89,13 +90,13 @@ if [[ "$LAST_BYTE" == "00" ]]; then
 fi
 
 # Write FRP
-sudo python3 mtk w frp frp.bin
+spython mtk w frp frp.bin
 
 read -p "[*] Unplug your device, press ENTER, plug it back in"
 
 cd ..
 
-sudo ./mtkbootcmd.py FASTBOOT
+spython ./mtkbootcmd.py FASTBOOT
 
 echo "[*] Waiting for fastboot..."
 while ! fastboot devices | grep -q "fastboot"; do
