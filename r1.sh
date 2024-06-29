@@ -10,7 +10,7 @@ install_debian() {
     [[ -x "$(command -v dos2unix)" ]] || sudo apt install -y dos2unix
     [[ -x "$(command -v curl)" ]] || sudo apt install -y curl
     [[ -x "$(command -v unzip)" ]] || sudo apt install -y unzip
-    sudo apt install -y libfuse-dev
+    dpkg-query -l libfuse-dev >/dev/null 2>&1 || sudo apt install -y libfuse-dev
 }
 
 install_arch() {
