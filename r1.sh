@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 install_debian() {
     sudo apt update
     [[ -x "$(command -v git)" ]] || sudo apt install -y git
@@ -71,7 +73,7 @@ chmod +x mtkbootcmd.py
 # Download mtkclient
 REPO_URL="https://github.com/AgentFabulous/mtkclient"
 REPO_NAME=$(basename "$REPO_URL" .git)
-git clone "$REPO_URL"
+test -d "$REPO_NAME" || git clone "$REPO_URL"
 cd "$REPO_NAME" || exit
 pip3 install -r requirements.txt
 
