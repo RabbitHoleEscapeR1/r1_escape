@@ -77,11 +77,11 @@ https://www.google.com/android/uncertified
 
 2. Run mtkclient from the command line using:
 
-   On Windows: `python mtk.py wl "path\to\backup" --serialport`
+   On Windows: `python mtk wl "path\to\backup" --serialport`
 
    On Linux: `python mtk.py wl "path\to\backup"` (or use mtkclient-GUI).
 
-    _(If you have issues with slow write speeds, follow this [issue](https://github.com/bkerler/mtkclient/issues/271#issuecomment-1038979632))._
+    _(If you have issues with slow write speeds, follow this [issue](https://github.com/bkerler/mtkclient/issues/271#issuecomment-2272411904))._
 
 3. Sit back and relax as your r1 is reset back to stock. This could take 20 minutes up to a few hours.
 
