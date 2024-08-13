@@ -60,6 +60,8 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     fi
 fi
 
+if ! test -e system.img; then echo "system.img not found! Did you remember to download and extract it?"; exit; fi
+
 # Setup virtualenv and install requirements
 python3 -m venv venv
 source venv/bin/activate
