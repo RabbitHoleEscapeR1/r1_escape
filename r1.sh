@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 install_debian() {
     sudo apt update
     [[ -x "$(command -v git)" ]] || sudo apt install -y git
